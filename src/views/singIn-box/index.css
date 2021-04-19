@@ -1,0 +1,13 @@
+.singInHeader_layout {
+    padding-top: 10rem;
+}
+.singIn_layout {
+    padding-top: 5rem;
+}
+/* re-write the core style*/
+.login-page .card-login {
+    max-width: 440px;
+}
+.errorMsgLi_style {
+  color: red;  
+}

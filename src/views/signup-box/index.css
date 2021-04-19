@@ -1,0 +1,7 @@
+.row.singUpBox_layout{
+    padding-top: 27.5rem;
+    display: block;
+}
+.row.singUpBox_layout .card_layout {
+    opacity:0.5;
+}

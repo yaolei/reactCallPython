@@ -1,0 +1,24 @@
+.sidebar-collapse .navbar .navbar-toggler-bar {
+    background: #459fdf;
+}
+.leftSidebar_marginLeft20_card {
+    margin-left: 20px;
+    height: 100%;
+}
+.rightSidebar_marginright20_card {
+    margin-right: 20px;
+    width: 98%;
+    height: 100%;
+}
+.middle_connect_seconde {
+    margin-left: 20px;
+    height: 100%;
+}
+.singIn_layout_seconed {
+    padding-top: 2rem;
+    padding-right: 50px;
+}
+.singIn_layout_middle {
+    padding-top: 5rem;
+    padding-left: 0px;
+}
