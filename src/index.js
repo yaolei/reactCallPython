@@ -17,6 +17,11 @@ import LandingPage from "views/examples/LandingPage.js";
 import ProfilePage from "views/examples/ProfilePage.js";
 import MainLayout from 'views/mainLayout/index.js'
 import MigrationMainLayout from 'views/migrationMainLayout/index.js'
+import OrderList from 'views/orderlist/index.js'
+import Stockinfor from 'views/stockinfor/index.js'
+import Addnewsite from 'views/stockinfor/addnewsite'
+import AddnewGoods from 'views/stockinfor/addnewGoods'
+
 
 ReactDOM.render(
   <BrowserRouter>
@@ -44,15 +49,39 @@ ReactDOM.render(
           path="/bpmigration"
           render={(props) => <MigrationMainLayout {...props} />}
         />
-        
+        <Route
+          path="/createdaily-report"
+          render={(props) => <MigrationMainLayout {...props} />}
+        />
         <Route
           path="/profile-page"
           render={(props) => <ProfilePage {...props} />}
         />
         <Route
+          path="/submitReport"
+          render={(props) => <LoginPage {...props} />}
+        />
+        <Route
+          path="/orderlist"
+          render={(props) => <OrderList {...props} />}
+        />
+        <Route
           path="/login-page"
           render={(props) => <LoginPage {...props} />}
         />
+        <Route
+          path="/stocklist"
+          render={(props) => <Stockinfor {...props} />}
+        />
+        <Route
+          path="/addnewstocksite"
+          render={(props) => <Addnewsite {...props} />}
+        />
+        <Route
+          path="/addnewgoods"
+          render={(props) => <AddnewGoods {...props} />}
+        />
+        
         <Redirect to="/index" />
         <Redirect from="/" to="/index" />
       </Switch>

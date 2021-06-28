@@ -56,9 +56,9 @@ function LoginPage(props) {
       } else {
         vailationInputForm = 1
           setUserNameValStyle("has-danger");
-          let accountErrorMsg = "Account name not correct. pls make user the account name and try again.";
+          let accountErrorMsg = "用户名称不正确，请确定使用正确的用户名称";
           if (!userInfor.name) {
-            accountErrorMsg = "Accont name couldn't be empty. pls enter yor account name."
+            accountErrorMsg = "用户名称不能为空, 请重新填写."
           }
           setUserNameErrorMsg(accountErrorMsg)
       }
@@ -69,9 +69,9 @@ function LoginPage(props) {
       } else {
         vailationInputForm = 1
         setPasswordNameValStyle("has-danger");
-        let passwordErrorMsg = "Password  not correct. pls make user the Password and try again.";
+        let passwordErrorMsg = "密码不正确, 请输入正确的密码.";
         if (!userInfor.name) {
-          passwordErrorMsg = "Password  couldn't be empty. pls enter yor Password ."
+          passwordErrorMsg = "用户密码不能为空,请重新填写."
         }
         setPasswordNameErrorMsg(passwordErrorMsg)
       }

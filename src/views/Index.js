@@ -24,7 +24,7 @@ import CompleteExamples from "./index-sections/CompleteExamples.js";
 import SignUp from "./index-sections/SignUp.js";
 import Examples from "./index-sections/Examples.js";
 import Download from "./index-sections/Download.js";
-
+import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 function Index() {
   React.useEffect(() => {
     document.body.classList.add("index-page");

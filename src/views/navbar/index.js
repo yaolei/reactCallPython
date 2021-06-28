@@ -15,7 +15,6 @@ import {
     Navbar,
     NavItem,
     NavLink,
-    UncontrolledTooltip,
     Nav,
     Container
   } from "reactstrap";
@@ -133,17 +132,26 @@ import {
               <span className="navbar-toggler-bar bar3"></span>
             </button>
             <UncontrolledCollapse navbar toggler="#navbarTogglerDemo01">
-              
               <Nav className="mr-auto mt-2 mt-lg-0 " navbar>
               <NavItem >
                   <NavLink className="disabled">
-                    BP migration 
+                    销售报表 
                   </NavLink>
                 </NavItem>
                 <NavItem className={iconPills === "1" ? "active" : ""}>
                   <NavLink href="/mainLayout">
                   <i className="now-ui-icons objects_globe"></i>
-                    Home <span className="sr-only">(current)</span>
+                    首页 <span className="sr-only">(current)</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    // className="disabled"
+                    href="/createdaily-report"
+                    // onClick={e => e.preventDefault()}
+                  >
+                    <i className="now-ui-icons business_bank"></i>
+                    创建当日销售记录
                   </NavLink>
                 </NavItem>
                 <NavItem className={iconPills === "2" ? "active" : ""}>
@@ -151,20 +159,17 @@ import {
                     href="/bpmigration" 
                   >
                   <i className="now-ui-icons business_chart-bar-32"></i>
-                    Daily Migration 
+                    当日销售记录 
                   </NavLink>
                 </NavItem>
-                <NavItem>
-                  <NavLink
-                    className="disabled"
-                    href="#pablo"
-                    onClick={e => e.preventDefault()}
+                <NavItem className={iconPills === "2" ? "active" : ""}>
+                  <NavLink 
+                    href="/orderlist" 
                   >
-                    <i className="now-ui-icons business_bank"></i>
-                    Bank
+                  <i className="now-ui-icons business_chart-bar-32"></i>
+                    订单记录列表 
                   </NavLink>
-                </NavItem>
-                
+                </NavItem>             
                 <UncontrolledDropdown nav>
                 <DropdownToggle
                   aria-haspopup={true}
@@ -176,26 +181,23 @@ import {
                   nav
                   onClick={e => e.preventDefault()}
                 >
-                  Dropdown link
+                  产品管理
                 </DropdownToggle>
                 <DropdownMenu aria-labelledby="navbarDropdownMenuLink">
                   <DropdownItem
-                    href="#pablo"
-                    onClick={e => e.preventDefault()}
+                    href="/stocklist"
                   >
-                    Action
+                    产品管理
                   </DropdownItem>
                   <DropdownItem
-                    href="#pablo"
-                    onClick={e => e.preventDefault()}
+                    href="/addnewstocksite"
                   >
-                    Another action
+                    产品仓库管理
                   </DropdownItem>
                   <DropdownItem
-                    href="#pablo"
-                    onClick={e => e.preventDefault()}
+                    href="/addnewgoods"
                   >
-                    Something else here
+                    新产品
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>

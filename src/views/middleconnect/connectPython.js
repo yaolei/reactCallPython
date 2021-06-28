@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import {FatherContext} from '../migrationMainLayout'
+import RegistrationForm from '../reportFroms'
 import axios from 'axios';
+
 function ConnectPython() {
   const [currentTime, setCurrentTime] = useState(10);
+  const pathName = useContext(FatherContext);
+
+  const [currentPathName, setCurrentPathName] = useState(pathName)
 
   useEffect(() => {
- 
-    axios.get('http://localhost:8000/', {
+    let URL =  "http://localhost:8000" + currentPathName;
+    axios.get(URL, {
         headers: {
             'Access-Control-Allow-Origin' : '*',
             'Access-Control-Allow-Methods' : 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
@@ -24,9 +30,7 @@ function ConnectPython() {
   return (
     <div className="App">
       <header className="App-header">
-
-        ... no changes in this part ...
-
+        <RegistrationForm />
         <p>The current time is {currentTime}.</p>
       </header>
     </div>

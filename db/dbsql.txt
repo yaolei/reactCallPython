@@ -1,0 +1,77 @@
+// User table
+CREATE TABLE USERS(
+   ID serial PRIMARY KEY     NOT NULL,
+   NAME           TEXT    ,
+   PHONE       varchar(30)     ,
+   phone_home  varchar(30),
+   phone_mobile  varchar(30),
+   phone_work  varchar(30),
+   phone_other varchar(30),
+   detailaddress varchar(50),
+   PROVINCE varchar(20),
+   CITY     varchar(20),
+   CITYAREA varchar(20),
+   STREET  varchar(100),
+   firstname varchar(20),
+   lastname varchar(20),
+   createdata varchar (40)  DEFAULT  (now()),
+   deleted  varchar (10) DEFAULT ('false'),
+   is_admin varchar (10) DEFAULT ('false'),
+   is_members varchar (10) DEFAULT ('false'),
+   modified_user_id varchar(10),
+   modified_by_name varchar(20),
+   create_user_id varchar(10),
+   create_by_name varchar(20),
+   usertype varchar(10),
+   sfc_role varchar(10),
+   emailaddress varchar(20),
+   picture varchar(50)
+);
+
+// product 
+CREATE TABLE product(
+   ID serial  PRIMARY KEY,
+   productname   varchar(20)    ,
+   repertory       TEXT    ,
+   province varchar(20),
+   stock    varchar(10),
+   price Float,
+   deleted  varchar (10) DEFAULT ('false')
+);
+
+// order
+
+CREATE TABLE USER_ORDER(
+   ID serial  PRIMARY KEY,
+   CLIENTNAME            varchar(20) ,
+   CLIENTID            varchar(20) ,
+   COMENTS               TEXT,
+   GOODSTYPE             varchar(20) ,
+   PHONE                 varchar(30) ,
+   SELLSNUM              INT ,
+   PROVINCE varchar(20),
+   CITY     varchar(20),
+   CITYAREA varchar(20),
+   STREET  varchar(100),
+   modifdata varchar (40)  DEFAULT  (now()),
+   modifdata varchar (40)  DEFAULT  (now()),
+   DETAILADDRESS  varchar(200),
+   deleted  varchar (10) DEFAULT ('false')
+);
+// stock site
+CREATE TABLE stock_site(
+   ID serial PRIMARY KEY     NOT NULL,
+   city           varchar(20)    ,
+   PROVINCE       varchar(20)   ,
+   deleted  varchar (10) DEFAULT ('false')
+);
+
+CREATE TABLE goods_list(
+   ID serial PRIMARY KEY     NOT NULL,
+   name           varchar(20)    ,
+   createdata varchar (40)  DEFAULT  (now()),
+   deleted  varchar (10) DEFAULT ('false')
+);
+
+
+
