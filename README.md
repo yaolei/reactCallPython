@@ -9,16 +9,8 @@ Data base with Postgresql and install with the docker
 
 1. After clone the code. 
 2. Install the front end & back end env. run ```npm install``` or ```yarn add```
-3. Start Front end env: run 
-```npm run start ``` & ```yarn start```
-4. Start back end env: run 
-```
-    python3 -m venv env
-    source env/bin/activate
-    python3 -m pip install -r requirements.txt
-```
-```cd root dir run yarn start-api```
-5. Start data base
+3. Merge the front and back end start behavior. Right now we could only use one nodejs server start front and backend at same time.
+4. Start data base
 install the docker continer with the postgreSql
 Create the DB base as you wanna.
 Create the Tables by the /db/dbsql.txt
