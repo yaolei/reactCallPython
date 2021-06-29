@@ -17,6 +17,8 @@ class Item(BaseModel):
     coments: str
     detail_address: str
     goodsType: str
+    stock_site: str
+    stock_site_city: str
     phone: int
     sells_num: int
     user_address:dict
@@ -54,9 +56,9 @@ async def inter_order_datas(datas, user_id):
     cursor = conn.cursor()
     logger.warn("--- **** DB connect success **** ---")
     logger.warn("--- **** insert order data **** ---")
-    sql = "insert into user_order (CLIENTNAME, CLIENTID, COMENTS, GOODSTYPE, PHONE, SELLSNUM, PROVINCE,CITY, CITYAREA, STREET, DETAILADDRESS) \
-                    values (%s, '%s',%s, %s, '%s', '%s', %s, %s, %s, %s, %s) RETURNING id"
-    params = (datas.clientName, user_id, datas.coments, datas.goodsType, datas.phone, datas.sells_num, datas.user_address['province'][0], datas.user_address['province'][1], datas.user_address['province'][2],datas.user_address['street'], datas.detail_address) 
+    sql = "insert into user_order (CLIENTNAME, CLIENTID, COMENTS, GOODSTYPE, STOCK_SITE, STOCK_SITE_CITY, PHONE, SELLSNUM, PROVINCE,CITY, CITYAREA, STREET, DETAILADDRESS) \
+                    values (%s, '%s',%s, %s, %s, %s, '%s', '%s', %s, %s, %s, %s, %s) RETURNING id"
+    params = (datas.clientName, user_id, datas.coments, datas.goodsType, datas.stock_site, datas.stock_site_city, datas.phone, datas.sells_num, datas.user_address['province'][0], datas.user_address['province'][1], datas.user_address['province'][2],datas.user_address['street'], datas.detail_address) 
     cursor.execute(sql, params)
     order_id = cursor.fetchone()
     conn.commit()
@@ -104,10 +106,7 @@ async def inter_new_goods(datas):
     logger.warn("--- **** DB connect success **** ---")
     logger.warn("--- **** insert one goods data **** ---")
     sql = "insert into goods_list (name) values('"+ datas.name+"') RETURNING id"
-    print(sql)
-    print(datas.name)
-    # params = (datas.name)      
-    # cursor.execute(sql, params)
+
     cursor.execute(sql)
     good_id = cursor.fetchone()
     conn.commit()
@@ -228,6 +227,34 @@ async def get_productdetial_list():
     await close_db_connection(conn, cursor)
     return data
 
+#get one goods stock num
+async def get_one_goods_stock_num(city, sid):
+    has_goods = ""
+    conn = await connect_to_db()
+    cursor = conn.cursor()
+    logger.warn("--- **** DB connect success **** ---")
+    logger.warn("--- **** Start get one goods max stock num **** ---")
+    sql = "select p.stock, gl.name as productname, p.repertory, p.province, p.price  FROM product p \
+          left join goods_list gl on  cast(gl.id as  character varying)  = p.productname \
+          where p.repertory = %s and gl.id = %s"
+    params = (city, sid,)
+    print(sql)
+    print(city)
+    print(sid)
+    cursor.execute(sql, params)
+    while True:
+        data = cursor.fetchone()
+        if data == None:
+            logger.warn("--- **** get one goods max stock num **** ---")
+            break
+        has_goods = data[0]
+    conn.commit()
+    await close_db_connection(conn, cursor)
+    if has_goods == "":
+        has_goods = False
+    return has_goods
+
+
 #get goods list datas
 async def get_progoods_list():
     conn = await connect_to_db()
@@ -247,10 +274,10 @@ async def getOrder():
     cursor = conn.cursor()
     logger.warn("--- **** DB connect success **** ---")
     logger.warn("--- **** Start get user order list **** ---")
-    sql = "select  uo.clientid , uo.clientname ,uo.phone ,p.productname , uo.sellsnum, uo.detailaddress , uo.province , \
-           uo.city, uo.status, u.is_members, uo.coments, uo.createdata from user_order uo \
+    sql = "select  uo.clientid , uo.clientname ,uo.phone ,gl.name , uo.sellsnum, uo.detailaddress , uo.province , \
+           uo.city, uo.status, u.is_members, uo.coments, uo.createdata, uo.stock_site, uo.stock_site_city from user_order uo \
            left join users u  on cast(u.id as  character varying) = uo.clientid \
-           left join product p on uo.goodstype = p.id   where u.deleted ='false' \
+           left join goods_list gl  on cast(gl.id as  character varying) = uo.goodstype   where u.deleted ='false' \
            order by uo.createdata desc "
     cursor.execute(sql)
     data = cursor.fetchall()
@@ -302,13 +329,6 @@ async def submit_add_stock(request_data: StockItem):
 @app.post("/submitProjects")
 async def submit_new_project(request_data: ProItem):
         proid = await inter_new_pro(request_data)
-        # pro_id = await check_exist_proId(request_data.id)
-        # if pro_id == False:
-        #     # no exist pro id , add new project
-        #     proid = await inter_new_pro(request_data)
-        # else:
-        #     proid = False
-        #     logger.warn("--- **** pro is exist !!  **** ---")
         return (proid)
 
 @app.post("/addnewGoods")
@@ -323,6 +343,11 @@ async def submit_new_goods(request_data: GoodsItem):
         
         return (goodsid)
 
+# @app.post("/getMaxStock")
+# async def get_max_stocks(request_data: MaxStockItem):
+#         max_stock = await get_one_goods_stock_num(request_data.city, request_data.sid)
+#         return (max_stock)
+
 @app.post("/submitReport")
 async def send_reportData(request_data: Item):
         #sumbit the order data
@@ -334,15 +359,32 @@ async def send_reportData(request_data: Item):
         else:
             userid = user_id
             logger.warn("--- **** User is exist !!  **** ---")
-        await inter_order_datas(request_data, userid)
-        # conn = await connect_to_db()
-        # cursor = conn.cursor()
-        # sql = inter_data(request_data)
-        # params = (request_data.clientName, request_data.coments, request_data.detail_address, request_data.goodsType, request_data.phone, request_data.prefix, request_data.sells_num, request_data.user_address['province'][0], request_data.user_address['province'][1], request_data.user_address['province'][2])
-        # cursor.execute(sql, params)
-        # conn.commit()
-        # await close_db_connection(conn, cursor)
-        return (userid)
+        # param: 1: city.
+        # 2 sell stock num
+        max_stock = await get_one_goods_stock_num(request_data.stock_site_city, request_data.goodsType)
+        print(max_stock)
+        if max_stock == False:
+            userid = max_stock
+            stockNum = max_stock
+            stock_num = 0
+            stock_val = 0
+        else:
+            stock_val = int(max_stock) - int(request_data.sells_num)
+            if stock_val >= 0:
+                stockNum = max_stock
+                stock_num = int(max_stock)
+                await inter_order_datas(request_data, userid)
+            else:
+                 userid = False
+                 stockNum = stock_val
+                 stock_num = int(max_stock)
+        result = {
+            "result": userid,
+            "stockNum": stockNum,
+            "stock_num": stock_num,
+            "stock_val": stock_val
+        }
+        return (result)
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Optional[str] = None):

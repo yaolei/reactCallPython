@@ -1,42 +1,77 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Form, Input, Cascader, Select, Button, message} from 'antd';
 import axios from 'axios';
+import City from '../../assets/json/city.json'
+import Province from '../../assets/json/province.json'
+import Region from '../../assets/json/region.json'
 const { Option } = Select;
 
-const residences = [
-  {
-    value: 'zhejiang',
-    label: 'Zhejiang',
-    children: [
-      {
-        value: 'hangzhou',
-        label: 'Hangzhou',
-        children: [
-          {
-            value: 'xihu',
-            label: 'West Lake',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    value: 'jiangsu',
-    label: 'Jiangsu',
-    children: [
-      {
-        value: 'nanjing',
-        label: 'Nanjing',
-        children: [
-          {
-            value: 'zhonghuamen',
-            label: 'Zhong Hua Men',
-          },
-        ],
-      },
-    ],
-  },
-];
+
+let selectStockCityVal = "",
+    selectStockProVal = "",
+    selectOptionGoodsVal = "",
+    selectOptionGoodsName = "";
+
+  
+const GoodsOptionslist = (goodsDatas) => {
+  let optionlist = [];
+  if (goodsDatas['datas'].length < 1) {
+      return (
+          <Select placeholder="选择一个产品">
+              <Option value=""></Option>
+          </Select>
+      )
+  }
+
+  const handledChangGoodsOptionsVal = (value)=> {
+      selectOptionGoodsVal = value["key"]
+      selectOptionGoodsName = value["label"]
+  }
+
+  goodsDatas['datas'].forEach((record) => {
+      optionlist.push(
+          <Option key={record.goodsId} value={record.goodsId} >{record.goodsName}</Option>
+      )
+  })
+  return (
+      <Select placeholder="选择一个产品" onChange={handledChangGoodsOptionsVal} labelInValue>
+          {optionlist}
+      </Select>
+  )
+}
+
+const CityOptionslist = (cityDatas) => {
+  let optionlist = [];
+  if (cityDatas['datas'].length < 1) {
+      return (
+          <Select placeholder="选择一个仓库位置">
+              <Option value=""></Option>
+          </Select>
+      )
+  }
+
+  const handledChangOptionsVal = (value)=> {
+      selectStockCityVal = value["key"][0]
+      selectStockProVal = value["key"][1]
+  }
+
+  cityDatas['datas'].forEach((record) => {
+      let stieVal =[];
+      stieVal.push(record.cityId)
+      stieVal.push(record.proId)
+          
+      
+      optionlist.push(
+          <Option key={record.cityId} value={stieVal} title={record.proId}>{record.cityName}</Option>
+      )
+  })
+  return (
+      <Select placeholder="选择一个仓库位置" onChange={handledChangOptionsVal} labelInValue>
+          {optionlist}
+      </Select>
+  )
+}
+
 const formItemLayout = {
   labelCol: {
     xs: {
@@ -68,24 +103,132 @@ const tailFormItemLayout = {
   },
 };
 
+
+
 const RegistrationForm = (props) => {
   const [form] = Form.useForm();
-  const onFinish = (values) => {
-    const urlReprot = "/submitReport"
-    const key = 'submitReport'
-    console.log('Received values of form: ', values);
-    let URL =  "http://localhost:8000" + urlReprot;
+  const [goodsDatas, setGoodsDatas] = useState([])
+  const [siteDatas, setSitesDatas] = useState([])
+  const [maxStockdatas, setMaxStockdatas] = useState(false)
+  
+  useEffect(() => {
+    getGoodsList();
+    getStockList();
+  }, [])
 
+
+  const getGoodsList = () => {
+    const urlOrderList = "/getGoodsDatas";
+    let data = [];
+    let URL =  "http://localhost:8000" + urlOrderList;
+    axios.get(URL)
+    .then(res => {
+      if (res.data === "") {
+        console.log("no datas return")
+      } else {
+        for (let i = 0; i < res.data.length; i++) {
+            data.push({
+              key: i,
+              goodsId: res.data[i][0],
+              goodsName: res.data[i][1]
+            });
+        }
+        setGoodsDatas(data)
+      }
+    })
+  }
+
+    const getStockList = () => {
+      const urlOrderList = "/getSiteDatas";
+      let data = [];
+      let URL =  "http://localhost:8000" + urlOrderList;
+      axios.get(URL)
+      .then(res => {
+        if (res.data === "") {
+          console.log("no datas return")
+        } else {
+          for (let i = 0; i < res.data.length; i++) {
+              if (res.data[i][3] =='false') {
+                  data.push({
+                      key: i,
+                      id: res.data[i][0],
+                      cityId: res.data[i][2],
+                      proId: res.data[i][1],
+                      cityName: getCityName (res.data[i]['1'], res.data[i]['2']) 
+                    });
+              }
+          }
+          setSitesDatas(data)
+        }
+      })
+    }
+
+    const getCityName = (proId, cityId) => {
+      let displayValue = ""
+          Object.values(City[proId]).forEach((record)=>{
+              if (record['value'] === cityId) {
+                  displayValue = record['label']
+              }
+          })
+      return displayValue
+    }
+
+    const setSiteOptions = () => {
+      let array = [],
+         cityArray = [],
+         streatArray = [];
+  
+      const getCityArray = (pId) => {
+          cityArray = []
+          City[pId].forEach((cid) => {
+              cityArray.push(
+                getStreat(cid['value'], cid)
+              )
+          })
+          return cityArray;
+      }
+      const getStreat = (cId, records) => {
+          records['children'] = []
+          if (Region[cId] != undefined) {
+              Region[cId].forEach((rId) => {
+                records['children'].push(
+                  rId
+                )
+              },[])
+          }
+          return records
+      }
+  
+      Province.forEach(data => {
+          array.push(
+              {
+                  value:data['id'],
+                  label:data['name'],
+                  children: getCityArray(data['id'])
+              }
+          )
+      });
+      return array
+   }
+
+  const onFinish = (values) => {
+    const urlReprot = "/submitReport",
+          key = 'submitReport';
+    values.stock_site_city = selectStockCityVal;
+    values.stock_site = selectStockProVal;
+    values.goodsType= selectOptionGoodsVal;
     message.loading({ 
       content: 'Loading...', key, 
       style: {
       marginTop: '20vh',
     }, });
 
+    let URL =  "http://localhost:8000" + urlReprot;
+
     axios.post(URL, values)
     .then(res => {
-        if (res.data) {
-          let sucessMes = '用户: ' + values.clientName +' 的订单创建成功, 4秒后跳转到订单详情页面. ';
+        if (res.data.result) {
+          let sucessMes = '用户: ' + values.clientName +' 的订单创建成功,剩余库存'+ res.data. stock_num +' 4秒后跳转到订单详情页面. ';
         
           setTimeout(() => {
               message.success({
@@ -94,13 +237,16 @@ const RegistrationForm = (props) => {
                   style: {
                       marginTop: '20vh',
                     },
-                    duration:3});
+                    duration:5});
               // clear the filed values
               form.resetFields();
               window.open("/orderlist", "_self");
           }, 1000);
       } else {
-          let errMes = '用户: ' + values.clientName +'的订单创建失败. 请联系管理员 ';
+          let errMes = '用户: ' + values.clientName +'的订单创建失败. 请联系管理员.';
+          if (res.data.stockNum) {
+            errMes = '剩余库存数量: '+ res.data. stock_num +'. 当前库存不足, 或选择的仓库不存在,请查看库存管理.';
+          }
           setTimeout(() => {
               message.error({
                   content:errMes, 
@@ -134,11 +280,11 @@ const RegistrationForm = (props) => {
       name="register"
       onFinish={onFinish}
       initialValues={{
-        residence: ['zhejiang', 'hangzhou', 'xihu'],
+        residence: ['', '', ''],
         prefix: '86',
         sells_num: '1',
-        goodsType: "xi01"
-
+        detail_address:'',
+        coments: ''
       }}
       scrollToFirstError
     >
@@ -180,13 +326,13 @@ const RegistrationForm = (props) => {
             noStyle
             rules={[{ required: true, message: '省份市区必须填一个' }]}
           >
-              <Cascader options={residences} />
+              <Cascader options={setSiteOptions()} placeholder="选择发货地址"/>
           </Form.Item>
           <Form.Item
             name={['user_address', 'street']}
             noStyle
           >
-            <Input style={{ width: '50%' }} placeholder="输入详细街道" />
+            <Input style={{ width: '50%' }} placeholder="输入详细地址" />
           </Form.Item>
         </Input.Group>
       </Form.Item>
@@ -200,20 +346,16 @@ const RegistrationForm = (props) => {
       <Form.Item
         name="goodsType"
         label="产品类型"
-        rules={[
-          {
-            required: true,
-            message: '请选择产品!',
-          },
-        ]}
       >
-        <Select placeholder="选择一个销售的产品">
-          <Option value="xi01">硒蛋白</Option>
-          <Option value="xi02">硒悦康</Option>
-          <Option value="xi03">植萃片</Option>
-          <Option value="xi04">参精片</Option>
-        </Select>
+          <GoodsOptionslist datas={goodsDatas}/>
       </Form.Item>
+
+      <Form.Item
+        name="stock_stie"
+        label="产品出仓位置"
+      >
+        <CityOptionslist datas={siteDatas}/>
+      </Form.Item> 
 
       <Form.Item
         name="sells_num"

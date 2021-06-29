@@ -2,7 +2,9 @@ import React , {useState,useEffect} from 'react'
 import NavMubar from 'views/navbar/index'
 import axios from 'axios';
 import { Table} from 'antd';
-import moment from 'moment'
+import moment from 'moment';
+import City from '../../assets/json/city.json'
+import Province from '../../assets/json/province.json'
 import {
     Card,
     Row,
@@ -98,23 +100,20 @@ const OrderList = ()=>  {
             fixed: 'right',
             width: 100,
             ellipsis: true,
-            render: () => <a>action</a>,
+            render: () => <a>删除</a>,
           },
       ];
 
 
     const [tabledatas, setTableDatas] = useState('')
-    const [scrollY, setScrollY] = useState("")
 
     useEffect(() => {
-        // document.body.classList.add("login-page");
         document.body.classList.add("sidebar-collapse");
         document.body.classList.add("sidebarColor");
         document.documentElement.classList.remove("nav-open");
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
         return function cleanup() {
-          // document.body.classList.remove("login-page");
           document.body.classList.remove("sidebar-collapse");
           document.body.classList.remove("sidebarColor");
         };
@@ -136,8 +135,8 @@ const OrderList = ()=>  {
                     goodstype: res.data[i][3],
                     sellsnum: res.data[i][4],
                     detailaddress:res.data[i][5],
-                    province:res.data[i][6],
-                    city:res.data[i][7],
+                    province:getfiledDisplayName('pro',Province, res.data[i][6]),
+                    city:getfiledDisplayName('city', City,res.data[i][6], res.data[i][7]),
                     status: res.data[i][8] == "completed"?"完成":"未完成",
                     is_members:res.data[i][9] == "false" ?"否":"是",
                     coments:res.data[i][10],
@@ -149,7 +148,24 @@ const OrderList = ()=>  {
             })
     },[])
 
-
+    const getfiledDisplayName = (type, datas, key, citykey=false) => {
+        let displayValue = ""
+        if (type === "pro") {
+            Object.values(datas).forEach((record)=>{
+                if (record['id'] === key) {
+                    displayValue = record['name']
+                }
+            })
+            
+        }else if (type === "city") {
+            Object.values(datas[key]).forEach((record)=>{
+                if (record['value'] === citykey) {
+                    displayValue = record['label']
+                }
+            })
+        }
+        return displayValue
+    }
     return(
         <>
       <NavMubar selectId={2}/>

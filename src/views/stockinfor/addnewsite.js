@@ -173,22 +173,6 @@ const AddnewSite = () => {
     return array
  }
 
-  // const handleAreaClick = (e, label, option) => {
-  //   e.stopPropagation();
-  //   console.log('clicked', label, option);
-  // }
-  // const displayRender = (labels, selectedOptions) =>
-  // labels.map((label, i) => {
-  //   const option = selectedOptions[i];
-  //   if (i === labels.length - 1) {
-  //     return (
-  //       <span key={option.value}>
-  //         {label} (<a onClick={e => handleAreaClick(e, label, option)}>{option.code}</a>)
-  //       </span>
-  //     );
-  //   }
-  //   return <span key={option.value}>{label} / </span>;
-  // });
     const getFields = () => {
         const children = [];
         const filedNameList =[

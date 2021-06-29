@@ -48,6 +48,8 @@ CREATE TABLE USER_ORDER(
    COMENTS               TEXT,
    GOODSTYPE             varchar(20) ,
    PHONE                 varchar(30) ,
+   stock_site varchar(20),
+   stock_site_city varchar(20),
    SELLSNUM              INT ,
    PROVINCE varchar(20),
    CITY     varchar(20),
